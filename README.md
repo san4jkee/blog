@@ -1,2 +1,2 @@
 # blog
-blog.san4jkee.ru
+Шаблон для блога
