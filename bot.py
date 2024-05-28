@@ -102,7 +102,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 def main() -> None:
-    updater = Updater('7153931285:AAGYrEOVTTLgXQfxLMrcLm3V1nF0zNVLz2U')
+    updater = Updater('TELEGRAM_BOT_API')
     
     dispatcher = updater.dispatcher
     
