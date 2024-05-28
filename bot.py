@@ -17,7 +17,7 @@ os.makedirs(TEMP_IMG_DIR, exist_ok=True)
 API_URL = 'http://blog.san4jkee.ru/upload_post.php'
 
 # Определение состояний для ConversationHandler
-ASKING_FOR_IMAGE, ASKING_FOR_DESCRIPTION = range(2)
+ASKING_FOR_INPUT = range(1)
 
 # Команда /start
 def start(update: Update, context: CallbackContext) -> None:
@@ -25,52 +25,54 @@ def start(update: Update, context: CallbackContext) -> None:
 
 # Команда /post
 def post(update: Update, context: CallbackContext) -> int:
-    update.message.reply_text('Пожалуйста, загрузите изображение для поста.')
-    return ASKING_FOR_IMAGE
+    update.message.reply_text('Пожалуйста, загрузите изображение для поста с описанием или отправьте ссылку на изображение с описанием.')
+    return ASKING_FOR_INPUT
 
-# Обработчик изображений
-def handle_image(update: Update, context: CallbackContext) -> int:
+# Обработчик ввода изображения или ссылки
+def handle_input(update: Update, context: CallbackContext) -> int:
+    description = None
+    image_base64 = None
+    image_url = None
+
     if update.message.photo:
         photo = update.message.photo[-1]  # Получаем изображение с наивысшим разрешением
         photo_file = context.bot.get_file(photo.file_id)
-        
+
         # Создаем уникальное имя файла
         image_id = str(uuid4())
         image_path = os.path.join(TEMP_IMG_DIR, f'{image_id}.jpg')
-        
+
         # Сохраняем файл временно
         photo_file.download(image_path)
-        
-        # Сохраняем путь к изображению в контексте
-        context.user_data['image_path'] = image_path
-        
-        update.message.reply_text('Теперь, пожалуйста, введите описание для поста.')
-        return ASKING_FOR_DESCRIPTION
-    else:
-        update.message.reply_text('Пожалуйста, загрузите изображение.')
-        return ASKING_FOR_IMAGE
 
-# Обработчик описания
-def handle_description(update: Update, context: CallbackContext) -> int:
-    description = update.message.text
-    image_path = context.user_data.get('image_path')
-    
-    if image_path:
         with open(image_path, 'rb') as img_file:
             image_data = img_file.read()
 
         # Конвертируем изображение в base64
         image_base64 = base64.b64encode(image_data).decode('utf-8')
 
+        # Удаляем временный файл изображения
+        os.remove(image_path)
+
+        # Получаем описание из подписи к фото
+        description = update.message.caption
+
+    elif update.message.text and (update.message.text.startswith('http://') or update.message.text.startswith('https://')):
+        # Сохраняем URL изображения и описание в контексте
+        image_url = update.message.text.split()[0]
+        description = ' '.join(update.message.text.split()[1:])
+
+    if description:
         # Форматируем дату
-        formatted_date = update.message.date.strftime('%H:%M - %d.%m.%Y')
+        formatted_date = datetime.now().strftime('%H:%M - %d.%m.%Y')
 
         post_data = {
             'description': description,
             'image': image_base64,
+            'image_url': image_url,
             'date': formatted_date
         }
-        
+
         try:
             # Отправляем пост на сайт
             response = requests.post(API_URL, json=post_data)
@@ -87,14 +89,11 @@ def handle_description(update: Update, context: CallbackContext) -> int:
 
         except requests.RequestException as e:
             update.message.reply_text(f'Произошла ошибка при соединении с сервером: {e}')
-        
-        # Удаляем временный файл изображения
-        os.remove(image_path)
 
         return ConversationHandler.END
     else:
-        update.message.reply_text('Произошла ошибка при сохранении изображения. Попробуйте снова.')
-        return ConversationHandler.END
+        update.message.reply_text('Пожалуйста, предоставьте описание вместе с изображением или ссылкой.')
+        return ASKING_FOR_INPUT
 
 # Команда /cancel для завершения разговора
 def cancel(update: Update, context: CallbackContext) -> int:
@@ -109,8 +108,7 @@ def main() -> None:
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('post', post)],
         states={
-            ASKING_FOR_IMAGE: [MessageHandler(Filters.photo, handle_image)],
-            ASKING_FOR_DESCRIPTION: [MessageHandler(Filters.text & ~Filters.command, handle_description)],
+            ASKING_FOR_INPUT: [MessageHandler(Filters.photo | (Filters.text & ~Filters.command), handle_input)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )

@@ -5,14 +5,7 @@ if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localS
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Скрываем мобильное меню по умолчанию
-  document.getElementById('mobile-menu').classList.add('hidden');
-
-  // Добавляем обработчик события для кнопки меню
-  document.getElementById('menu-toggle').addEventListener('click', function () {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
-  });
-
+  
   var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
   var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 

@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Добавляем новый пост
             $posts[] = [
+                'id' => count($posts) + 1,
                 'description' => $data['description'],
                 'image' => '/posts/img/' . $imageName,
                 'date' => $data['date'],
