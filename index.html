@@ -5,7 +5,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="yandex-verification" content="f3c9162a571ff1e7" />
-  <title>My Blog</title>
+  <meta name="zen-verification" content="ppyrArNEEhpYdbXUuG6oFWlkbaS938O7UIsqMrsu0gIZjyR9WQv454ofnFSlGtHQ" />
+  <title>TechPulse: IT & AI Innovations. Блог</title>
+  <meta name="description" content="TechPulse - это канал для всех, кто хочет быть в курсе последних новостей и тенденций в области информационных технологий и искусственного интеллекта. Здесь вы найдете актуальные статьи, обзоры, интервью с экспертами и многое другое.">
+  <meta name="keywords" content="IT новости, AI инновации, технологические тренды, информационные технологии, искусственный интеллект, технологические новинки, обзоры IT продуктов, IT эксперты, технологические статьи, AI разработки">
+  <meta name="author" content="TechPulse: IT & AI Innovations">
+  <meta name="robots" content="index, follow"> 
+  <meta property="og:title" content="TechPulse: IT & AI Innovations">
+  <meta property="og:description" content="TechPulse - это канал для всех, кто хочет быть в курсе последних новостей и тенденций в области информационных технологий и искусственного интеллекта. Здесь вы найдете актуальные статьи, обзоры, интервью с экспертами и многое другое.">
+  <meta property="og:image" content="/posts/img/logo.jpg">
+  <meta property="og:url" content="http://blog.san4jkee.ru">
+  <link rel="apple-touch-icon" sizes="180x180" href="/posts/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/posts/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/posts/img/favicon-16x16.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Дополнительные стили */
@@ -85,24 +97,15 @@
           const postElement = document.createElement('div');
           postElement.className = 'max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700';
           postElement.innerHTML = `
-  <img class="rounded-t-lg object-cover h-48 w-96" src="${post.image}" alt="" />
-  <div class="p-5">
-    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 truncate description">${post.description}</p>
-    <p class="pt-2 border-t-2 border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-      ${post.date}</p>
-  </div>
-  `;
+            <div>
+              <img class="rounded-t-lg object-cover h-48 w-96 cursor-pointer" src="${post.image}" alt="" data-src="${post.image}" onclick="showImageModal(this)" />
+            </div>
+            <div class="p-5">
+              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">${post.description}</p>
+              <p class="pt-2 border-t-2 border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">${post.date}</p>
+            </div>
+          `;
           postsSection.appendChild(postElement);
-
-          // Добавляем обработчик клика для раскрытия полного описания
-          const descriptionElement = postElement.querySelector('.description');
-          descriptionElement.addEventListener('click', () => {
-            if (descriptionElement.classList.contains('truncate')) {
-              descriptionElement.classList.remove('truncate');
-            } else {
-              descriptionElement.classList.add('truncate');
-            }
-          });
         });
       } catch (error) {
         console.error('Ошибка загрузки постов:', error);
@@ -110,19 +113,30 @@
     }
     // Вызов функции loadPosts при загрузке страницы
     document.addEventListener('DOMContentLoaded', loadPosts);
+
+    // Функция для отображения полноразмерного изображения в модальном окне
+    function showImageModal(element) {
+      const imageUrl = element.getAttribute('data-src');
+
+      const modal = document.createElement('div');
+      modal.innerHTML = `
+        <div class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-75">
+          <div class="relative">
+            <button class="absolute top-0 right-0 m-4 text-blue-500 text-3xl font-bold focus:outline-none" onclick="closeImageModal()">×</button>
+            <img src="${imageUrl}" class="max-w-full max-h-screen" alt="Full size image">
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    // Функция для закрытия модального окна с изображением
+    function closeImageModal() {
+      const modal = document.querySelector('.bg-gray-800');
+      modal.parentNode.removeChild(modal);
+    }
   </script>
 
-  <style>
-    .truncate {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      /* количество строк для отображения */
-      -webkit-box-orient: vertical;
-      cursor: pointer;
-    }
-  </style>
 </body>
 
 </html>
