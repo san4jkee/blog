@@ -32,10 +32,10 @@
 </head>
 
 <body class="bg-white dark:bg-gray-900">
-  <header>
+  <header class="sticky top-0 bg-white dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75">
     <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
       <div class="flex lg:flex-1">
-        <a href="#" class="-m-1.5 p-1.5">
+        <a href="/" class="-m-1.5 p-1.5">
           <span class="text-lg font-bold text-gray-900 dark:text-blue-600">Blog</span>
         </a>
       </div>
@@ -88,7 +88,7 @@
           } else if (post.media_type === 'video') {
             mediaElement = `
               <div>
-                <video class="rounded-t-lg object-cover h-48 w-96 cursor-pointer" controls>
+                <video class="rounded-t-lg object-cover h-48 w-96 cursor-pointer bg-white dark:bg-gray-800" controls>
                   <source src="${post.media}" type="video/mp4">
                   Your browser does not support the video tag.
                 </video>
@@ -107,7 +107,7 @@
           postElement.innerHTML = `
             ${mediaElement}
             <div class="p-5">
-              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 truncate cursor-pointer" onclick="toggleDescription(this)">
+              <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
                 ${post.description}
               </p>
               <p class="pt-2 border-t-2 border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">${post.date}</p>
@@ -145,10 +145,7 @@
       modal.parentNode.removeChild(modal);
     }
   
-    // Функция для переключения отображения полного описания
-    function toggleDescription(element) {
-      element.classList.toggle('truncate');
-    }
+    
   </script>
   
   
