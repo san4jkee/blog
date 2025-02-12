@@ -34,4 +34,5 @@ replay_pid*
 *.msi
 *.jpg
 *.webp
-/posts/img*
+/posts/*
+*.py

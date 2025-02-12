@@ -55,7 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'description' => $data['description'],
             ($data['media_type'] === 'image') ? 'image' : 'media' => $mediaPath,
             'media_type' => $data['media_type'],
-            'date' => $data['date'],
+            'date' => date('Y-m-d H:i:s'), // Автоматическая дата
+            'slug' => mb_substr(strtolower(preg_replace('/[^a-zA-Z0-9]+/u', '-', $data['description'])), 0, 60) // Генерация ЧПУ
         ];
 
         // Сохраняем обновленные данные в JSON файл
